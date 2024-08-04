@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Evaluación Práctica</title>
+</head>
+<body>
+    <button onclick="dataManager.listUserNames()">Listar nombres de todos los usuarios</button>
+    <button onclick="dataManager.showBasicInfo()">Mostrar información básica</button>
+    <button onclick="dataManager.showAddress()">Mostrar dirección</button>
+    <button onclick="dataManager.showAdvancedInfo()">Mostrar información avanzada</button>
+    <button onclick="dataManager.listCompanies()">Listar compañías</button>
+    <button onclick="dataManager.listUserNamesAlphabetically()">Listar nombres alfabéticamente</button>
+    <pre id="output"></pre>
+    <script>
+        class DataManager {
+            constructor(url) {
+                this.url = url;
+                this.data = [];
+                this.fetchData();
+            }
+
+            fetchData() {
+                const xhr = new XMLHttpRequest();
+                xhr.open("GET", this.url, true);
+                xhr.onreadystatechange = () => {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        this.data = JSON.parse(xhr.responseText);
+                    }
+                };
+                xhr.send();
+            }
+
+            listUserNames() {
+                const userNames = this.data.map(user => user.name);
+                this.displayOutput(userNames.join("\n"));
+            }
+
+            showBasicInfo() {
+                const userName = prompt("Ingrese el nombre del usuario:");
+                const user = this.data.find(user => user.name.toLowerCase() === userName.toLowerCase());
+                if (user) {
+                    this.displayOutput(`Username: ${user.username}\nEmail: ${user.email}`);
+                } else {
+                    this.displayOutput("Usuario no encontrado.");
+                }
+            }
+
+            showAddress() {
+                const userName = prompt("Ingrese el nombre del usuario:");
+                const user = this.data.find(user => user.name.toLowerCase() === userName.toLowerCase());
+                if (user) {
+                    this.displayOutput(`Calle: ${user.address.street}\nSuite: ${user.address.suite}\nCiudad: ${user.address.city}\nCódigo Postal: ${user.address.zipcode}`);
+                } else {
+                    this.displayOutput("Usuario no encontrado.");
+                }
+            }
+
+            showAdvancedInfo() {
+                const userName = prompt("Ingrese el nombre del usuario:");
+                const user = this.data.find(user => user.name.toLowerCase() === userName.toLowerCase());
+                if (user) {
+                    this.displayOutput(`Teléfono: ${user.phone}\nSitio Web: ${user.website}\nCompañía: ${user.company.name}`);
+                } else {
+                    this.displayOutput("Usuario no encontrado.");
+                }
+            }
+
+            listCompanies() {
+                const companies = this.data.map(user => `${user.company.name}: ${user.company.catchPhrase}`);
+                this.displayOutput(companies.join("\n"));
+            }
+
+            listUserNamesAlphabetically() {
+                const userNames = this.data.map(user => user.name).sort();
+                this.displayOutput(userNames.join("\n"));
+            }
+
+            displayOutput(text) {
+                document.getElementById("output").textContent = text;
+            }
+        }
+
+        const dataManager = new DataManager('https://jsonplaceholder.typicode.com/users');
+    </script>
+</body>
+</html>
